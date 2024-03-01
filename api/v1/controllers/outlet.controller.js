@@ -9,11 +9,8 @@ import {
   responseServer500,
 } from "../configs/response.config.js";
 import {
-  validateCardStore,
-  validateCardUpdate,
   validateOutletStore,
   validateOutletUpdate,
-  validateUUIDCard,
   validateUUIDOutlet,
 } from "./allValidation.controller.js";
 
