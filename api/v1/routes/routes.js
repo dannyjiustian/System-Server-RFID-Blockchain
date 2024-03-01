@@ -5,6 +5,7 @@
 import { express, baseURL, notFound } from "../configs/server.config.js";
 import user from "../controllers/user.controller.js";
 import hardware from "../controllers/hardware.controller.js";
+import card from "../controllers/card.controller.js";
 import { checkVerifRefresh } from "../controllers/verifToken.controller.js";
 
 /**
@@ -42,6 +43,16 @@ route.get(`${basicURI}/hardware/:id_hardware`, hardware.show);
 route.post(`${basicURI}/hardware/save`, hardware.store);
 route.put(`${basicURI}/hardware/:id_hardware/update`, hardware.update);
 route.delete(`${basicURI}/hardware/:id_hardware`, hardware.destroy);
+
+/**
+ * English: endpoint url for card
+ * Indonesian: endpoint url untuk card
+ */
+route.get(`${basicURI}/card/`, card.index);
+route.get(`${basicURI}/card/:id_card`, card.show);
+route.post(`${basicURI}/card/save`, card.store);
+route.put(`${basicURI}/card/:id_card/update`, card.update);
+route.delete(`${basicURI}/card/:id_card`, card.destroy);
 
 /**
  * English: endpoint url for those not found
