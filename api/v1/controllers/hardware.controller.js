@@ -5,7 +5,6 @@
 import { PrismaClient } from "@prisma/client";
 import {
   responseServer200,
-  responseServer400,
   responseServer404,
   responseServer500,
 } from "../configs/response.config.js";
