@@ -130,7 +130,7 @@ const update = async (req, res) => {
         },
         data,
       });
-      responseServer200(res, "Successfully store hardware!", {
+      responseServer200(res, "Successfully update hardware!", {
         name: result.name,
         is_active: result.is_active,
       });
