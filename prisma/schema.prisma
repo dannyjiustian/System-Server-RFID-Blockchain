@@ -44,7 +44,7 @@ model cards {
   id_card        String         @id @default(uuid()) @db.Char(36)
   users          users          @relation(fields: [id_user], references: [id_user])
   id_user        String         @db.Char(36)
-  id_rfid        String         @db.Char(36)
+  id_rfid        String         @db.VarChar(16) @unique
   balance        Float
   wallet_address String         @db.Char(42)
   created_at     DateTime       @default(now())
