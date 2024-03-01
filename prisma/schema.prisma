@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id_user      String         @id @default(uuid()) @db.Char(36)
+  name         String         @db.VarChar(100)
+  username     String         @unique @db.VarChar(50)
+  email        String         @unique
+  password     String         @db.VarChar(200)
+  role         String         @db.Char(1)
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  hardwares    hardwares[]
+  cards        cards[]
+  outlets      outlets[]
+  transactions transactions[]
+}
+
+model hardwares {
+  id_hardware  String         @id @default(uuid()) @db.Char(36)
+  users        users          @relation(fields: [id_user], references: [id_user])
+  id_user      String         @db.Char(36)
+  sn_sensor    String         @unique @db.Char(10)
+  name         String         @db.VarChar(100)
+  is_active    Boolean
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  transactions transactions[]
+}
+
+model cards {
+  id_card        String         @id @default(uuid()) @db.Char(36)
+  users          users          @relation(fields: [id_user], references: [id_user])
+  id_user        String         @db.Char(36)
+  id_rfid        String         @db.Char(36)
+  balance        Float
+  wallet_address String         @db.Char(42)
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
+  transactions   transactions[]
+}
+
+model outlets {
+  id_outlet      String         @id @default(uuid()) @db.Char(36)
+  users          users          @relation(fields: [id_user], references: [id_user])
+  id_user        String         @db.Char(36)
+  smart_contract String         @db.Char(42)
+  balance        Float
+  created_at     DateTime       @default(now())
+  updated_at     DateTime       @updatedAt
+  transactions   transactions[]
+}
+
+model transactions {
+  id_transaction String    @id @default(uuid()) @db.Char(36)
+  users          users     @relation(fields: [id_user], references: [id_user])
+  id_user        String    @db.Char(36)
+  hardwares      hardwares @relation(fields: [id_hardware], references: [id_hardware])
+  id_hardware    String    @db.Char(36)
+  cards          cards     @relation(fields: [id_card], references: [id_card])
+  id_card        String    @db.Char(36)
+  outlets        outlets   @relation(fields: [id_outlet], references: [id_outlet])
+  id_outlet      String    @db.Char(36)
+  txn_hash       String    @db.Char(66)
+  total_payment  Float
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+}
