@@ -104,6 +104,34 @@ const validateCardUpdate = (requestData) => {
   return updateCardSchema.validate(requestData);
 };
 
+const validateOutletStore = (requestData) => {
+  const outletStoreSchema = joi
+    .object({
+      id_user: joi.string().required().uuid(),
+      balance: joi.number().required(),
+      smart_contract: joi.string().required().max(42),
+    })
+    .options({ abortEarly: false });
+  return outletStoreSchema.validate(requestData);
+};
+
+const validateUUIDOutlet = (requestData) => {
+  const uUIDOutletSchema = joi
+    .object({
+      id_outlet: joi.string().required().uuid(),
+    })
+    .options({ abortEarly: false });
+  return uUIDOutletSchema.validate(requestData);
+};
+
+const validateOutletUpdate = (requestData) => {
+  const updateOutletSchema = joi
+    .object({
+      balance: joi.number().required(),
+    })
+    .options({ abortEarly: false });
+  return updateOutletSchema.validate(requestData);
+};
 /**
  * English: export validation configuration
  * Indonesian: export konfigurasi validasi
@@ -118,4 +146,7 @@ export {
   validateCardStore,
   validateUUIDCard,
   validateCardUpdate,
+  validateOutletStore,
+  validateUUIDOutlet,
+  validateOutletUpdate
 };
