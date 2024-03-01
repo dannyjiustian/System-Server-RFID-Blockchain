@@ -6,7 +6,8 @@ import { express, baseURL, notFound } from "../configs/server.config.js";
 import user from "../controllers/user.controller.js";
 import hardware from "../controllers/hardware.controller.js";
 import card from "../controllers/card.controller.js";
-import outlet from '../controllers/outlet.controller.js'
+import outlet from "../controllers/outlet.controller.js";
+import transaction from "../controllers/transaction.controller.js";
 import { checkVerifRefresh } from "../controllers/verifToken.controller.js";
 
 /**
@@ -62,7 +63,14 @@ route.get(`${basicURI}/outlet/`, outlet.index);
 route.get(`${basicURI}/outlet/:id_outlet`, outlet.show);
 route.post(`${basicURI}/outlet/save`, outlet.store);
 route.put(`${basicURI}/outlet/:id_outlet/update`, outlet.update);
-route.delete(`${basicURI}/outlet/:id_outlet`, outlet.destroy);
+
+/**
+ * English: endpoint url for transaction
+ * Indonesian: endpoint url untuk transaction
+ */
+route.get(`${basicURI}/transaction/`, transaction.index);
+route.get(`${basicURI}/transaction/:id_transaction`, transaction.show);
+route.post(`${basicURI}/transaction/save`, transaction.store);
 
 /**
  * English: endpoint url for those not found
