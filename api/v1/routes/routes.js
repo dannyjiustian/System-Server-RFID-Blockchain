@@ -6,6 +6,7 @@ import { express, baseURL, notFound } from "../configs/server.config.js";
 import user from "../controllers/user.controller.js";
 import hardware from "../controllers/hardware.controller.js";
 import card from "../controllers/card.controller.js";
+import outlet from '../controllers/outlet.controller.js'
 import { checkVerifRefresh } from "../controllers/verifToken.controller.js";
 
 /**
@@ -42,7 +43,6 @@ route.get(`${basicURI}/hardware/`, hardware.index);
 route.get(`${basicURI}/hardware/:id_hardware`, hardware.show);
 route.post(`${basicURI}/hardware/save`, hardware.store);
 route.put(`${basicURI}/hardware/:id_hardware/update`, hardware.update);
-route.delete(`${basicURI}/hardware/:id_hardware`, hardware.destroy);
 
 /**
  * English: endpoint url for card
@@ -53,6 +53,16 @@ route.get(`${basicURI}/card/:id_card`, card.show);
 route.post(`${basicURI}/card/save`, card.store);
 route.put(`${basicURI}/card/:id_card/update`, card.update);
 route.delete(`${basicURI}/card/:id_card`, card.destroy);
+
+/**
+ * English: endpoint url for outlet
+ * Indonesian: endpoint url untuk outlet
+ */
+route.get(`${basicURI}/outlet/`, outlet.index);
+route.get(`${basicURI}/outlet/:id_outlet`, outlet.show);
+route.post(`${basicURI}/outlet/save`, outlet.store);
+route.put(`${basicURI}/outlet/:id_outlet/update`, outlet.update);
+route.delete(`${basicURI}/outlet/:id_outlet`, outlet.destroy);
 
 /**
  * English: endpoint url for those not found
