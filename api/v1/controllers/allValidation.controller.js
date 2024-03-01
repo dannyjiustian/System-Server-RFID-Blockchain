@@ -74,6 +74,36 @@ const validateHardwareUpdate = (requestData) => {
   return updateHardwareSchema.validate(requestData);
 };
 
+const validateCardStore = (requestData) => {
+  const cardStoreSchema = joi
+    .object({
+      id_user: joi.string().required().uuid(),
+      id_rfid: joi.string().required().max(16),
+      balance: joi.number().required(),
+      wallet_address: joi.string().required().max(42),
+    })
+    .options({ abortEarly: false });
+  return cardStoreSchema.validate(requestData);
+};
+
+const validateUUIDCard = (requestData) => {
+  const uUIDCardSchema = joi
+    .object({
+      id_card: joi.string().required().uuid(),
+    })
+    .options({ abortEarly: false });
+  return uUIDCardSchema.validate(requestData);
+};
+
+const validateCardUpdate = (requestData) => {
+  const updateCardSchema = joi
+    .object({
+      balance: joi.number().required(),
+    })
+    .options({ abortEarly: false });
+  return updateCardSchema.validate(requestData);
+};
+
 /**
  * English: export validation configuration
  * Indonesian: export konfigurasi validasi
@@ -85,4 +115,7 @@ export {
   validateHardwareStore,
   validateUUIDHardware,
   validateHardwareUpdate,
+  validateCardStore,
+  validateUUIDCard,
+  validateCardUpdate,
 };
