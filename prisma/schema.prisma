@@ -55,7 +55,7 @@ model cards {
 model outlets {
   id_outlet      String         @id @default(uuid()) @db.Char(36)
   users          users          @relation(fields: [id_user], references: [id_user])
-  id_user        String         @db.Char(36)
+  id_user        String         @db.Char(36) @unique
   smart_contract String         @db.Char(42)
   balance        Float
   created_at     DateTime       @default(now())
