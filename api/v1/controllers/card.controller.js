@@ -11,10 +11,7 @@ import {
 import {
   validateCardStore,
   validateCardUpdate,
-  validateHardwareStore,
-  validateHardwareUpdate,
   validateUUIDCard,
-  validateUUIDHardware,
 } from "./allValidation.controller.js";
 
 /**
