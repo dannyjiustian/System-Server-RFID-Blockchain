@@ -53,13 +53,13 @@ const show = async (req, res) => {
       result === null
         ? responseServer404(
             res,
-            "There is no data hardware in the database yet"
+            "There is no data card in the database yet"
           )
-        : responseServer200(res, "Successfully find hardware!", result);
+        : responseServer200(res, "Successfully find card!", result);
     } catch (error) {
       responseServer500(
         res,
-        "Get specific data hardware failed!, check error",
+        "Get specific data card failed!, check error",
         error
       );
     }
