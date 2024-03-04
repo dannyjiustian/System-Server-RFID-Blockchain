@@ -14,25 +14,25 @@ datasource db {
 }
 
 model users {
-  id_user      String         @id @default(uuid()) @db.Char(36)
-  name         String         @db.VarChar(100)
-  username     String         @unique @db.VarChar(50)
-  email        String         @unique
-  password     String         @db.VarChar(200)
-  role         String         @db.Char(1)
-  created_at   DateTime       @default(now())
-  updated_at   DateTime       @updatedAt
-  hardwares    hardwares[]
-  cards        cards[]
-  outlets      outlets[]
-  transactions transactions[]
+  id_user          String             @id @default(uuid()) @db.Char(36)
+  name             String             @db.VarChar(100)
+  username         String             @unique @db.VarChar(50)
+  email            String             @unique
+  password         String             @db.VarChar(200)
+  role             String             @db.Char(1)
+  created_at       DateTime           @default(now())
+  updated_at       DateTime           @updatedAt
+  hardwares        hardwares[]
+  cards            cards[]
+  outlets          outlets[]
+  transactions     transactions[]
 }
 
 model hardwares {
   id_hardware  String         @id @default(uuid()) @db.Char(36)
   users        users          @relation(fields: [id_user], references: [id_user])
   id_user      String         @db.Char(36)
-  sn_sensor    String         @unique @db.Char(10)
+  sn_sensor    String         @unique @db.Char(12)
   name         String         @db.VarChar(100)
   is_active    Boolean
   created_at   DateTime       @default(now())
@@ -44,7 +44,7 @@ model cards {
   id_card        String         @id @default(uuid()) @db.Char(36)
   users          users          @relation(fields: [id_user], references: [id_user])
   id_user        String         @db.Char(36)
-  id_rfid        String         @db.VarChar(16) @unique
+  id_rfid        String         @unique @db.VarChar(16)
   balance        Float
   wallet_address String         @db.Char(42)
   created_at     DateTime       @default(now())
@@ -55,7 +55,7 @@ model cards {
 model outlets {
   id_outlet      String         @id @default(uuid()) @db.Char(36)
   users          users          @relation(fields: [id_user], references: [id_user])
-  id_user        String         @db.Char(36) @unique
+  id_user        String         @unique @db.Char(36)
   smart_contract String         @db.Char(42)
   balance        Float
   created_at     DateTime       @default(now())
@@ -73,7 +73,7 @@ model transactions {
   id_card        String    @db.Char(36)
   outlets        outlets   @relation(fields: [id_outlet], references: [id_outlet])
   id_outlet      String    @db.Char(36)
-  txn_hash       String    @db.Char(66)
+  txn_hash       String?   @db.Char(66)
   total_payment  Float
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
