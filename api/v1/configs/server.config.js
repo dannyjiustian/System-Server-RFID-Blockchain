@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { Base64 } from "js-base64";
 import bodyParser from "body-parser";
+import mqtt from "mqtt";
 import { responseServer500 } from "./response.config.js";
 
 /**
@@ -30,6 +31,10 @@ const secretRefreshKeyJWT =
   Base64.encode(process.env.SECRET_REFRESH_KEY_JWT) || "changeRefreshKey";
 const secretSaltBycrpt = parseInt(process.env.SECRET_SALT_BYCRPT) || 0;
 const portServerConfig = process.env.PORT_SERVER || 3000;
+const hostMQTT = process.env.HOST_MQTT || "your mqtt broker url";
+const portMQTT = process.env.PORT_MQTT || "your mqtt port";
+const usernameMQTT = process.env.USERNAME_MQTT || "your mqtt broker username";
+const passwordMQTT = process.env.PASSWORD_MQTT || "your mqtt broket password";
 
 /**
  * English: add-on configuration
@@ -38,6 +43,14 @@ const portServerConfig = process.env.PORT_SERVER || 3000;
 
 const corsServerConfig = {
   origin: typeDevelop === "production" ? corsOriginServer : "*",
+};
+
+const mqttClientConfig = {
+  host: hostMQTT,
+  port: portMQTT,
+  protocol: "mqtts",
+  username: usernameMQTT,
+  password: passwordMQTT,
 };
 
 /**
@@ -94,12 +107,19 @@ serverExpress.use(bodyParser.urlencoded({ extended: false }));
 serverExpress.use(express.json());
 
 /**
+ * English: configure mqtt client
+ * Indonesian: konfigurasi mqtt client
+ */
+const clientMqtt = mqtt.connect(mqttClientConfig);
+
+/**
  * English: export configuration
  * Indonesian: export konfigurasi
  */
 export {
   express,
   serverExpress,
+  clientMqtt,
   cors,
   bodyParser,
   baseURL,
