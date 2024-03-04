@@ -13,6 +13,7 @@ import {
   validateHardwareUpdate,
   validateUUIDHardware,
 } from "./allValidation.controller.js";
+import { clientMqtt } from "../configs/server.config.js";
 
 /**
  * English: functions that will be used in the endpoint
@@ -20,6 +21,25 @@ import {
  */
 const prisma = new PrismaClient();
 let response_error = {};
+
+clientMqtt.on("message", async (topic, message) => {
+  if (topic == "CheckESP") {
+    const JSONdata = JSON.parse(message.toString());
+    try {
+      const result = await prisma.hardwares.update({
+        where: {
+          sn_sensor: JSONdata.sn_sensor,
+        },
+        data: {
+          is_active: JSONdata.is_active,
+        },
+      });
+      console.log("Successfully update active hardware!");
+    } catch (error) {
+      console.log(`Update active hardware failed!, check error: ${error}`);
+    }
+  }
+});
 
 const index = async (req, res) => {
   try {
@@ -118,17 +138,15 @@ const update = async (req, res) => {
     });
 
   if (Object.keys(response_error).length === 0) {
-    const { name, is_active } = req.body;
-    let data = {};
-    typeof name === "undefined"
-      ? (data = { is_active })
-      : (data = { name, is_active });
+    const { name } = req.body;
     try {
       const result = await prisma.hardwares.update({
         where: {
           id_hardware: req.params.id_hardware,
         },
-        data,
+        data: {
+          name,
+        },
       });
       responseServer200(res, "Successfully update hardware!", {
         name: result.name,
