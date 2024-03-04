@@ -12,6 +12,7 @@ import {
   validateTransactionStore,
   validateUUIDTransaction,
 } from "./allValidation.controller.js";
+import { clientMqtt } from "../configs/server.config.js";
 
 /**
  * English: functions that will be used in the endpoint
@@ -19,6 +20,26 @@ import {
  */
 const prisma = new PrismaClient();
 let response_error = {};
+
+clientMqtt.on("message", async (topic, message) => {
+  if (topic == "ReadRFID") {
+    const JSONdata = JSON.parse(message.toString());
+    try {
+      const result = await prisma.transactions.findFirst({
+        where: {
+          hardwares: {
+            sn_sensor: JSONdata.sn_sensor,
+          },
+          txn_hash: null,
+        },
+      });
+      console.log(result);
+      console.log("Successfully update transaction!");
+    } catch (error) {
+      console.log(`Update transaction failed!, check error: ${error}`);
+    }
+  }
+});
 
 const index = async (req, res) => {
   try {
