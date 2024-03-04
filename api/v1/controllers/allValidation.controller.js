@@ -67,8 +67,7 @@ const validateUUIDHardware = (requestData) => {
 const validateHardwareUpdate = (requestData) => {
   const updateHardwareSchema = joi
     .object({
-      name: joi.string().max(100),
-      is_active: joi.boolean().required(),
+      name: joi.string().max(100).required(),
     })
     .options({ abortEarly: false });
   return updateHardwareSchema.validate(requestData);
@@ -140,7 +139,7 @@ const validateTransactionStore = (requestData) => {
       id_hardware: joi.string().required().uuid(),
       id_card: joi.string().required().uuid(),
       id_outlet: joi.string().required().uuid(),
-      txn_hash: joi.string().required().max(42),
+      txn_hash: joi.string().optional().max(42),
       total_payment: joi.number().required(),
     })
     .options({ abortEarly: false });
