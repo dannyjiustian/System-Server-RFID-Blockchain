@@ -183,6 +183,7 @@ const store = async (req, res) => {
     });
   if (Object.keys(response_error).length === 0) {
     const {
+      type,
       total_payment,
       txn_hash,
       id_user,
@@ -193,6 +194,7 @@ const store = async (req, res) => {
     try {
       const result = await prisma.transactions.create({
         data: {
+          type,
           total_payment,
           txn_hash,
           id_user,
