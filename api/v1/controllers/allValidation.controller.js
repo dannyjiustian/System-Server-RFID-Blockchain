@@ -139,6 +139,7 @@ const validateTransactionStore = (requestData) => {
       id_hardware: joi.string().required().uuid(),
       id_card: joi.string().required().uuid(),
       id_outlet: joi.string().required().uuid(),
+      type: joi.number().required().max(1),
       txn_hash: joi.string().optional().max(42),
       total_payment: joi.number().required(),
     })
