@@ -14,18 +14,18 @@ datasource db {
 }
 
 model users {
-  id_user          String             @id @default(uuid()) @db.Char(36)
-  name             String             @db.VarChar(100)
-  username         String             @unique @db.VarChar(50)
-  email            String             @unique
-  password         String             @db.VarChar(200)
-  role             String             @db.Char(1)
-  created_at       DateTime           @default(now())
-  updated_at       DateTime           @updatedAt
-  hardwares        hardwares[]
-  cards            cards[]
-  outlets          outlets[]
-  transactions     transactions[]
+  id_user      String         @id @default(uuid()) @db.Char(36)
+  name         String         @db.VarChar(100)
+  username     String         @unique @db.VarChar(50)
+  email        String         @unique
+  password     String         @db.VarChar(200)
+  role         String         @db.Char(1)
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @updatedAt
+  hardwares    hardwares[]
+  cards        cards[]
+  outlets      outlets[]
+  transactions transactions[]
 }
 
 model hardwares {
@@ -73,6 +73,7 @@ model transactions {
   id_card        String    @db.Char(36)
   outlets        outlets   @relation(fields: [id_outlet], references: [id_outlet])
   id_outlet      String    @db.Char(36)
+  type           Int      @db.SmallInt
   txn_hash       String?   @db.Char(66)
   total_payment  Float
   created_at     DateTime  @default(now())
