@@ -22,19 +22,94 @@ const prisma = new PrismaClient();
 let response_error = {};
 
 clientMqtt.on("message", async (topic, message) => {
+  const JSONdata = JSON.parse(message.toString());
   if (topic == "ReadRFID") {
-    const JSONdata = JSON.parse(message.toString());
     try {
-      const result = await prisma.transactions.findFirst({
+      const result = await prisma.transactions.findFirstOrThrow({
         where: {
+          type: JSONdata.type,
           hardwares: {
             sn_sensor: JSONdata.sn_sensor,
           },
+          cards: {
+            id_rfid: JSONdata.rfid,
+          },
           txn_hash: null,
         },
+        include: {
+          cards: true,
+          outlets: true,
+        },
       });
-      console.log(result);
-      console.log("Successfully update transaction!");
+
+      if (JSONdata.type === 0) {
+        // before this will later check the etherium blockchain transaction
+        const balance_update = result.cards.balance - result.total_payment;
+        if (balance_update < 0) {
+          clientMqtt.publish(
+            result.id_transaction,
+            JSON.stringify({
+              success: false,
+              message: "Balance Card Not Enough",
+              code: 400,
+            })
+          );
+        } else {
+          await prisma.transactions.update({
+            where: {
+              id_transaction: result.id_transaction,
+            },
+            data: {
+              txn_hash: "helo",
+            },
+          });
+          await prisma.cards.update({
+            where: {
+              id_rfid: result.cards.id_rfid,
+            },
+            data: {
+              balance: balance_update,
+            },
+          });
+          await prisma.outlets.update({
+            where: {
+              id_outlet: result.outlets.id_outlet,
+            },
+            data: {
+              balance: {
+                increment: result.total_payment,
+              },
+            },
+          });
+          clientMqtt.publish(
+            result.id_transaction,
+            JSON.stringify({
+              success: true,
+              message: "Transaction Successfully",
+              code: 200,
+            })
+          );
+        }
+      } else if (JSONdata.type === 1) {
+        await prisma.cards.update({
+          where: {
+            id_rfid: result.cards.id_rfid,
+          },
+          data: {
+            balance: {
+              increment: result.total_payment,
+            },
+          },
+        });
+        clientMqtt.publish(
+          result.id_transaction,
+          JSON.stringify({
+            success: true,
+            message: "Transaction Successfully",
+            code: 200,
+          })
+        );
+      }
     } catch (error) {
       console.log(`Update transaction failed!, check error: ${error}`);
     }
