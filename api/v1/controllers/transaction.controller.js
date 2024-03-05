@@ -192,6 +192,20 @@ const store = async (req, res) => {
       id_outlet,
     } = req.body;
     try {
+      const resultCheck = await prisma.transactions.findFirst({
+        where: {
+          type: type,
+          txn_hash: null,
+        },
+      });
+
+      if (resultCheck !== null) {
+        await prisma.transactions.delete({
+          where: {
+            id_transaction: resultCheck.id_transaction,
+          },
+        });
+      }
       const result = await prisma.transactions.create({
         data: {
           type,
