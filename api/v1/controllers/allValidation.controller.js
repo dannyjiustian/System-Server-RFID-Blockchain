@@ -18,6 +18,17 @@ const validateUserLogin = (requestData) => {
   return userLoginSchema.validate(requestData);
 };
 
+const validateUserReset = (requestData) => {
+  const userResetSchema = joi
+    .object({
+      email: joi.string().required().email(),
+      username: joi.string().case("lower").required().max(50),
+      password: joi.string().required().max(200).min(8),
+    })
+    .options({ abortEarly: false });
+  return userResetSchema.validate(requestData);
+};
+
 const validateUserRegister = (requestData) => {
   const userRegisterSchema = joi
     .object({
@@ -161,6 +172,7 @@ const validateUUIDTransaction = (requestData) => {
  */
 export {
   validateUserLogin,
+  validateUserReset,
   validateUserRegister,
   validateUserUpdate,
   validateHardwareStore,
