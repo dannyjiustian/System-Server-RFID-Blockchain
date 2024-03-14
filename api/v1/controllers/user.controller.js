@@ -11,6 +11,7 @@ import {
 import {
   validateUserLogin,
   validateUserRegister,
+  validateUserReset,
   validateUserUpdate,
 } from "./allValidation.controller.js";
 import {
@@ -38,7 +39,7 @@ const login = async (req, res) => {
     const { username, password } = req.body;
     try {
       const result = await prisma.users.findUnique({
-        where: { username: username },
+        where: { username },
       });
 
       result !== null
@@ -58,7 +59,7 @@ const login = async (req, res) => {
           : responseServer404(res, "Username or Password is wrong!")
         : responseServer404(res, "Username or Password is wrong!");
     } catch (error) {
-      responseServer500(res, "Login user failed!, check error", error.message);
+      responseServer500(res, "Login user failed!, check error", error);
     }
   } else {
     responseServer500(
@@ -94,6 +95,38 @@ const register = async (req, res) => {
       });
     } catch (error) {
       responseServer500(res, "Create new user failed!, check error", error);
+    }
+  } else {
+    responseServer500(
+      res,
+      "Your request cannot run due to an error, check",
+      JSON.parse(JSON.stringify(response_error).replace(/\\"/g, ""))
+    );
+  }
+};
+
+const reset = async (req, res) => {
+  response_error = {};
+  const { error } = validateUserReset(req.body);
+  if (error)
+    error.details.forEach((err_msg) => {
+      response_error[err_msg.path[0]] = err_msg.message;
+    });
+  if (Object.keys(response_error).length === 0) {
+    const { username, password, email } = req.body;
+    try {
+      const result = await prisma.users.update({
+        where: { username, email },
+        data: {
+          password: hash(password),
+        },
+      });
+
+      responseServer200(res, "Successfully reset!", {
+        username: result.username,
+      });
+    } catch (error) {
+      responseServer500(res, "Reset user failed!, check error", error);
     }
   } else {
     responseServer500(
@@ -164,4 +197,4 @@ const refreshToken = async (req, res) => {
   }
 };
 
-export default { login, register, update, refreshToken };
+export default { login, register, reset, update, refreshToken };
