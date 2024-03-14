@@ -28,6 +28,7 @@ const basicURI = `/api/${baseURL}`;
  */
 route.post(`${basicURI}/login`, user.login);
 route.post(`${basicURI}/register`, user.register);
+route.post(`${basicURI}/reset`, user.reset);
 route.put(`${basicURI}/update`, user.update);
 
 /**
