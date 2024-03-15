@@ -72,6 +72,7 @@ route.put(`${basicURI}/outlet/:id_outlet/update`, outlet.update);
  */
 route.get(`${basicURI}/transaction/`, transaction.index);
 route.get(`${basicURI}/transaction/:id_transaction`, transaction.show);
+route.get(`${basicURI}/transaction/id-user/:id_user`, transaction.showByUser);
 route.post(`${basicURI}/transaction/save`, transaction.store);
 
 /**
