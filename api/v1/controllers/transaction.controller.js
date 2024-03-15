@@ -11,6 +11,7 @@ import {
 import {
   validateTransactionStore,
   validateUUIDTransaction,
+  validateUUIDUser,
 } from "./allValidation.controller.js";
 import { clientMqtt } from "../configs/server.config.js";
 
@@ -174,6 +175,44 @@ const show = async (req, res) => {
   }
 };
 
+const showByUser = async (req, res) => {
+  response_error = {};
+  const { error } = validateUUIDUser(req.params);
+  if (error)
+    error.details.forEach((err_msg) => {
+      response_error[err_msg.path[0]] = err_msg.message;
+    });
+  if (Object.keys(response_error).length === 0) {
+    try {
+      let options = {
+        where: {
+          id_user: req.params.id_user,
+        },
+      };
+      if (typeof req.query.take !== "undefined" && req.query.take !== "") options.take = parseInt(req.query.take);
+      const result = await prisma.transactions.findMany(options);
+      result.length < 1
+        ? responseServer404(
+            res,
+            "There is no data transaction in the database yet"
+          )
+        : responseServer200(res, "Successfully find transaction!", result);
+    } catch (error) {
+      responseServer500(
+        res,
+        "Get specific data transaction failed!, check error",
+        error
+      );
+    }
+  } else {
+    responseServer500(
+      res,
+      "Your request cannot run due to an error, check",
+      JSON.parse(JSON.stringify(response_error).replace(/\\"/g, ""))
+    );
+  }
+};
+
 const store = async (req, res) => {
   response_error = {};
   const { error } = validateTransactionStore(req.body);
@@ -235,4 +274,4 @@ const store = async (req, res) => {
   }
 };
 
-export default { index, show, store };
+export default { index, show, showByUser, store };
