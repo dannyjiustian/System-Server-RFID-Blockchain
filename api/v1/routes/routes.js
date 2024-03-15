@@ -52,6 +52,7 @@ route.put(`${basicURI}/hardware/:id_hardware/update`, hardware.update);
  */
 route.get(`${basicURI}/card/`, card.index);
 route.get(`${basicURI}/card/:id_card`, card.show);
+route.get(`${basicURI}/card/id-user/:id_user`, card.showByUser);
 route.post(`${basicURI}/card/save`, card.store);
 route.put(`${basicURI}/card/:id_card/update`, card.update);
 route.delete(`${basicURI}/card/:id_card`, card.destroy);
