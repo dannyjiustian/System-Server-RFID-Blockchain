@@ -105,6 +105,15 @@ const validateUUIDCard = (requestData) => {
   return uUIDCardSchema.validate(requestData);
 };
 
+const validateUUIDUser = (requestData) => {
+  const uUIDUserSchema = joi
+    .object({
+      id_user: joi.string().required().uuid(),
+    })
+    .options({ abortEarly: false });
+  return uUIDUserSchema.validate(requestData);
+};
+
 const validateCardUpdate = (requestData) => {
   const updateCardSchema = joi
     .object({
@@ -180,6 +189,7 @@ export {
   validateHardwareUpdate,
   validateCardStore,
   validateUUIDCard,
+  validateUUIDUser,
   validateCardUpdate,
   validateOutletStore,
   validateUUIDOutlet,
