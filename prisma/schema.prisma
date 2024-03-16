@@ -73,8 +73,9 @@ model transactions {
   id_card        String    @db.Char(36)
   outlets        outlets   @relation(fields: [id_outlet], references: [id_outlet])
   id_outlet      String    @db.Char(36)
-  type           Int      @db.SmallInt
+  type           Int       @db.SmallInt
   txn_hash       String?   @db.Char(66)
+  status         String   @db.VarChar(20)
   total_payment  Float
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
