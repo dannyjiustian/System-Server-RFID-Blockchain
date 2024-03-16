@@ -188,8 +188,22 @@ const showByUser = async (req, res) => {
         where: {
           id_user: req.params.id_user,
         },
+        orderBy: {
+          created_at: "desc",
+        },
       };
-      if (typeof req.query.take !== "undefined" && req.query.take !== "") options.take = parseInt(req.query.take);
+
+      if (typeof req.query.take !== "undefined" && req.query.take !== "")
+        options.take = parseInt(req.query.take);
+      if (
+        typeof req.query.status !== "undefined" &&
+        req.query.status !== ""
+      ) {
+        options.where.status = {};
+        req.query.status === "true"
+          ? (options.where.status.not = "On Proses")
+          : (options.where.status = "On Proses");
+      }
       const result = await prisma.transactions.findMany(options);
       result.length < 1
         ? responseServer404(
@@ -234,7 +248,7 @@ const store = async (req, res) => {
       const resultCheck = await prisma.transactions.findFirst({
         where: {
           type: type,
-          txn_hash: null,
+          status: "On Proses",
         },
       });
 
@@ -254,6 +268,7 @@ const store = async (req, res) => {
           id_hardware,
           id_card,
           id_outlet,
+          status: "On Proses",
         },
       });
       responseServer200(res, "Successfully store transaction!", result);
