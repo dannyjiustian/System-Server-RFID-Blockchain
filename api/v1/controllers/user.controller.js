@@ -51,6 +51,7 @@ const login = async (req, res) => {
                 name: result.name,
                 email: result.email,
                 role: result.role,
+                created_at: result.created_at,
               }),
               refreshToken: signRefreshJWT({
                 id_user: result.id_user,
@@ -186,6 +187,7 @@ const refreshToken = async (req, res) => {
             name: result.name,
             email: result.email,
             role: result.role,
+            created_at: result.created_at,
           }),
           refreshToken: signRefreshJWT({
             id_user: result.id_user,
