@@ -148,11 +148,18 @@ const show = async (req, res) => {
     });
   if (Object.keys(response_error).length === 0) {
     try {
-      const result = await prisma.transactions.findFirst({
+      let options = {
         where: {
           id_transaction: req.params.id_transaction,
         },
-      });
+      };
+      if (typeof req.query.status !== "undefined" && req.query.status !== "") {
+        options.where.status = {};
+        req.query.status === "true"
+          ? (options.where.status.not = "On Proses")
+          : (options.where.status = "On Proses");
+      }
+      const result = await prisma.transactions.findFirst(options);
       result === null
         ? responseServer404(
             res,
