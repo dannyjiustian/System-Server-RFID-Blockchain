@@ -195,10 +195,7 @@ const showByUser = async (req, res) => {
 
       if (typeof req.query.take !== "undefined" && req.query.take !== "")
         options.take = parseInt(req.query.take);
-      if (
-        typeof req.query.status !== "undefined" &&
-        req.query.status !== ""
-      ) {
+      if (typeof req.query.status !== "undefined" && req.query.status !== "") {
         options.where.status = {};
         req.query.status === "true"
           ? (options.where.status.not = "On Proses")
@@ -289,4 +286,35 @@ const store = async (req, res) => {
   }
 };
 
-export default { index, show, showByUser, store };
+const cancel = async (req, res) => {
+  response_error = {};
+  const { error } = validateUUIDTransaction(req.params);
+  if (error)
+    error.details.forEach((err_msg) => {
+      response_error[err_msg.path[0]] = err_msg.message;
+    });
+  if (Object.keys(response_error).length === 0) {
+    try {
+      const result = await prisma.transactions.update({
+        where: {
+          id_transaction: req.params.id_transaction,
+          status: "On Proses",
+        },
+        data: {
+          status: "Batal",
+        },
+      });
+      responseServer200(res, "Successfully cancel transaction!", result);
+    } catch (error) {
+      responseServer500(res, "Cancel transaction failed!, check error", error);
+    }
+  } else {
+    responseServer500(
+      res,
+      "Your request cannot run due to an error, check",
+      JSON.parse(JSON.stringify(response_error).replace(/\\"/g, ""))
+    );
+  }
+};
+
+export default { index, show, showByUser, store, cancel };
