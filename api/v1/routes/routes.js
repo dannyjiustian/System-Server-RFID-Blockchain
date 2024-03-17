@@ -74,6 +74,7 @@ route.get(`${basicURI}/transaction/`, transaction.index);
 route.get(`${basicURI}/transaction/:id_transaction`, transaction.show);
 route.get(`${basicURI}/transaction/id-user/:id_user`, transaction.showByUser);
 route.post(`${basicURI}/transaction/save`, transaction.store);
+route.put(`${basicURI}/transaction/cancel/:id_transaction`, transaction.cancel);
 
 /**
  * English: endpoint url for those not found
