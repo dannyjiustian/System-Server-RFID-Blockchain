@@ -2,13 +2,28 @@
  * English: imports the modules used
  * Indonesian: mengimpor modul yang digunakan
  */
-import { verifRefreshJWT } from "../configs/server.config.js";
-import { responseServer500 } from "../configs/response.config.js";
+import { verifAccessJWT, verifRefreshJWT } from "../configs/server.config.js";
+import { responseServer401 } from "../configs/response.config.js";
+
+const checkVerifAccess = (req, res, next) => {
+  const bearer = req.headers.authorization;
+  if (!bearer)
+    return responseServer401(res, "please enter bearer authentication");
+
+  const token = bearer.split(" ")[1];
+  try {
+    const verif = verifAccessJWT(token);
+    req.id_user = verif.id_user;
+    next();
+  } catch (error) {
+    responseServer401(res, `access token verification failed, ${error.message}`);
+  }
+};
 
 const checkVerifRefresh = (req, res, next) => {
   const bearer = req.headers.authorization;
   if (!bearer)
-    return responseServer500(res, "please enter bearer authentication");
+    return responseServer401(res, "please enter bearer authentication");
 
   const token = bearer.split(" ")[1];
   try {
@@ -16,12 +31,8 @@ const checkVerifRefresh = (req, res, next) => {
     req.id_user = verif.id_user;
     next();
   } catch (error) {
-    responseServer500(
-      res,
-      "access token verification failed",
-      Object.keys(error).length > 0 ? error : error.message
-    );
+    responseServer401(res, `refresh token verification failed, ${error.message}`);
   }
 };
 
-export { checkVerifRefresh };
+export { checkVerifAccess, checkVerifRefresh };
