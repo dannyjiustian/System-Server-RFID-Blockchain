@@ -18,6 +18,9 @@ const sendResponse = (status, message, response = []) => {
 const responseServer400 = (res, msg) =>
   res.status(400).json(sendResponse(false, msg));
 
+const responseServer401 = (res, msg) =>
+  res.status(401).json(sendResponse(false, msg));
+
 const responseServer404 = (res, msg) =>
   res.status(404).json(sendResponse(false, msg));
 
@@ -29,6 +32,7 @@ const responseServer500 = (res, msg, data = "") =>
 
 export {
   responseServer400,
+  responseServer401,
   responseServer200,
   responseServer404,
   responseServer500,
