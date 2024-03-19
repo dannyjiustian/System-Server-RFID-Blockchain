@@ -63,7 +63,7 @@ const notFound = (req, res) => {
 
 const signAccessJWT = (payload) => {
   return jwt.sign(payload, secretAccessKeyJWT, {
-    expiresIn: "10m",
+    expiresIn: "1m",
     algorithm: "HS512",
   });
 };
@@ -74,7 +74,7 @@ const verifAccessJWT = (token) => {
 
 const signRefreshJWT = (payload) => {
   return jwt.sign(payload, secretRefreshKeyJWT, {
-    expiresIn: "1h",
+    expiresIn: "3d",
     algorithm: "HS512",
   });
 };
