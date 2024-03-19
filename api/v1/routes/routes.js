@@ -8,7 +8,7 @@ import hardware from "../controllers/hardware.controller.js";
 import card from "../controllers/card.controller.js";
 import outlet from "../controllers/outlet.controller.js";
 import transaction from "../controllers/transaction.controller.js";
-import { checkVerifRefresh } from "../controllers/verifToken.controller.js";
+import { checkVerifAccess, checkVerifRefresh } from "../controllers/verifToken.controller.js";
 
 /**
  * English: call the router function in express
@@ -52,7 +52,7 @@ route.put(`${basicURI}/hardware/:id_hardware/update`, hardware.update);
  */
 route.get(`${basicURI}/card/`, card.index);
 route.get(`${basicURI}/card/:id_card`, card.show);
-route.get(`${basicURI}/card/id-user/:id_user`, card.showByUser);
+route.get(`${basicURI}/card/id-user/:id_user`, checkVerifAccess, card.showByUser);
 route.post(`${basicURI}/card/save`, card.store);
 route.put(`${basicURI}/card/:id_card/update`, card.update);
 route.delete(`${basicURI}/card/:id_card`, card.destroy);
