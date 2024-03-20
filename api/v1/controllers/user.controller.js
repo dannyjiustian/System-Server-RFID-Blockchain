@@ -49,6 +49,7 @@ const login = async (req, res) => {
               accessToken: signAccessJWT({
                 id_user: result.id_user,
                 name: result.name,
+                username: result.username,
                 email: result.email,
                 role: result.role,
                 created_at: result.created_at,
@@ -159,7 +160,18 @@ const update = async (req, res) => {
         },
       });
       responseServer200(res, "Successfully update!", {
-        name: result.name,
+        username: result.username,
+        accessToken: signAccessJWT({
+          id_user: result.id_user,
+          name: result.name,
+          username: result.username,
+          email: result.email,
+          role: result.role,
+          created_at: result.created_at,
+        }),
+        refreshToken: signRefreshJWT({
+          id_user: result.id_user,
+        }),
       });
     } catch (error) {
       responseServer500(res, "Update user failed!, check error", error);
@@ -185,6 +197,7 @@ const refreshToken = async (req, res) => {
           accessToken: signAccessJWT({
             id_user: result.id_user,
             name: result.name,
+            username: result.username,
             email: result.email,
             role: result.role,
             created_at: result.created_at,
