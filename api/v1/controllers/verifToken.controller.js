@@ -16,7 +16,7 @@ const checkVerifAccess = (req, res, next) => {
     req.id_user = verif.id_user;
     next();
   } catch (error) {
-    responseServer401(res, `access token verification failed, ${error.message}`);
+    responseServer401(res, "access token verification failed");
   }
 };
 
@@ -31,7 +31,7 @@ const checkVerifRefresh = (req, res, next) => {
     req.id_user = verif.id_user;
     next();
   } catch (error) {
-    responseServer401(res, `refresh token verification failed, ${error.message}`);
+    responseServer401(res, "refresh token verification failed");
   }
 };
 
