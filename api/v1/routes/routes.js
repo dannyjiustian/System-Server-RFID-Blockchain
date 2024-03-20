@@ -8,7 +8,10 @@ import hardware from "../controllers/hardware.controller.js";
 import card from "../controllers/card.controller.js";
 import outlet from "../controllers/outlet.controller.js";
 import transaction from "../controllers/transaction.controller.js";
-import { checkVerifAccess, checkVerifRefresh } from "../controllers/verifToken.controller.js";
+import {
+  checkVerifAccess,
+  checkVerifRefresh,
+} from "../controllers/verifToken.controller.js";
 
 /**
  * English: call the router function in express
@@ -52,7 +55,11 @@ route.put(`${basicURI}/hardware/:id_hardware/update`, hardware.update);
  */
 route.get(`${basicURI}/card/`, card.index);
 route.get(`${basicURI}/card/:id_card`, card.show);
-route.get(`${basicURI}/card/id-user/:id_user`, checkVerifAccess, card.showByUser);
+route.get(
+  `${basicURI}/card/id-user/:id_user`,
+  checkVerifAccess,
+  card.showByUser
+);
 route.post(`${basicURI}/card/save`, card.store);
 route.put(`${basicURI}/card/:id_card/update`, card.update);
 route.delete(`${basicURI}/card/:id_card`, card.destroy);
@@ -71,8 +78,16 @@ route.put(`${basicURI}/outlet/:id_outlet/update`, outlet.update);
  * Indonesian: endpoint url untuk transaction
  */
 route.get(`${basicURI}/transaction/`, transaction.index);
-route.get(`${basicURI}/transaction/:id_transaction`, transaction.show);
-route.get(`${basicURI}/transaction/id-user/:id_user`, transaction.showByUser);
+route.get(
+  `${basicURI}/transaction/:id_transaction`,
+  checkVerifAccess,
+  transaction.show
+);
+route.get(
+  `${basicURI}/transaction/id-user/:id_user`,
+  checkVerifAccess,
+  transaction.showByUser
+);
 route.post(`${basicURI}/transaction/save`, transaction.store);
 route.put(`${basicURI}/transaction/cancel/:id_transaction`, transaction.cancel);
 
