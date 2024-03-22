@@ -247,32 +247,37 @@ const store = async (req, res) => {
       id_hardware,
       id_card,
       id_outlet,
+      status,
     } = req.body;
     try {
-      const resultCheck = await prisma.transactions.findFirst({
-        where: {
-          type: type,
-          status: "On Proses",
-        },
-      });
-
-      if (resultCheck !== null) {
-        await prisma.transactions.delete({
+      if (typeof status === "undefined") {
+        const resultCheck = await prisma.transactions.findFirst({
           where: {
-            id_transaction: resultCheck.id_transaction,
+            id_user,
+            type: parseInt(type),
+            status: "On Proses",
           },
         });
+
+        if (resultCheck !== null) {
+          await prisma.transactions.delete({
+            where: {
+              id_transaction: resultCheck.id_transaction,
+            },
+          });
+        }
       }
+
       const result = await prisma.transactions.create({
         data: {
-          type,
-          total_payment,
+          type: parseInt(type),
+          total_payment: parseInt(total_payment),
           txn_hash,
           id_user,
           id_hardware,
           id_card,
           id_outlet,
-          status: "On Proses",
+          status: typeof status == "undefined" ? "On Proses" : status,
         },
       });
       responseServer200(res, "Successfully store transaction!", result);
