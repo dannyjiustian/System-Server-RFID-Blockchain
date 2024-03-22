@@ -88,12 +88,19 @@ const validateCardStore = (requestData) => {
   const cardStoreSchema = joi
     .object({
       id_user: joi.string().required().uuid(),
-      id_rfid: joi.string().required().max(16),
+      id_rfid: joi.string().required().max(24),
       balance: joi.number().required(),
-      wallet_address: joi.string().required().max(42),
     })
     .options({ abortEarly: false });
   return cardStoreSchema.validate(requestData);
+};
+const validateCardRfid = (requestData) => {
+  const cardRfidSchema = joi
+    .object({
+      id_rfid: joi.string().required().max(24),
+    })
+    .options({ abortEarly: false });
+  return cardRfidSchema.validate(requestData);
 };
 
 const validateUUIDCard = (requestData) => {
@@ -156,11 +163,12 @@ const validateTransactionStore = (requestData) => {
   const transactionStoreSchema = joi
     .object({
       id_user: joi.string().required().uuid(),
-      id_hardware: joi.string().required().uuid(),
+      id_hardware: joi.string().optional().uuid(),
       id_card: joi.string().required().uuid(),
-      id_outlet: joi.string().required().uuid(),
+      id_outlet: joi.string().optional().uuid(),
       type: joi.number().required().max(1),
       txn_hash: joi.string().optional().max(42),
+      status: joi.string().optional(),
       total_payment: joi.number().required(),
     })
     .options({ abortEarly: false });
@@ -188,6 +196,7 @@ export {
   validateUUIDHardware,
   validateHardwareUpdate,
   validateCardStore,
+  validateCardRfid,
   validateUUIDCard,
   validateUUIDUser,
   validateCardUpdate,
