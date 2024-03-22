@@ -55,13 +55,14 @@ route.put(`${basicURI}/hardware/:id_hardware/update`, hardware.update);
  */
 route.get(`${basicURI}/card/`, card.index);
 route.get(`${basicURI}/card/:id_card`, card.show);
+route.get(`${basicURI}/card/check/:id_rfid`, checkVerifAccess, card.searchCard);
 route.get(
   `${basicURI}/card/id-user/:id_user`,
   checkVerifAccess,
   card.showByUser
 );
-route.post(`${basicURI}/card/save`, card.store);
-route.put(`${basicURI}/card/:id_card/update`, card.update);
+route.post(`${basicURI}/card/save`, checkVerifAccess, card.store);
+route.put(`${basicURI}/card/:id_card/update`, checkVerifAccess, card.update);
 route.delete(`${basicURI}/card/:id_card`, card.destroy);
 
 /**
@@ -88,8 +89,12 @@ route.get(
   checkVerifAccess,
   transaction.showByUser
 );
-route.post(`${basicURI}/transaction/save`, transaction.store);
-route.put(`${basicURI}/transaction/cancel/:id_transaction`, transaction.cancel);
+route.post(`${basicURI}/transaction/save`, checkVerifAccess, transaction.store);
+route.put(
+  `${basicURI}/transaction/cancel/:id_transaction`,
+  checkVerifAccess,
+  transaction.cancel
+);
 
 /**
  * English: endpoint url for those not found
