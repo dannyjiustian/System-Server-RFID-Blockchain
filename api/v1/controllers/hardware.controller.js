@@ -12,6 +12,7 @@ import {
   validateHardwareStore,
   validateHardwareUpdate,
   validateUUIDHardware,
+  validateUUIDUser,
 } from "./allValidation.controller.js";
 import { clientMqtt } from "../configs/server.config.js";
 
@@ -92,6 +93,45 @@ const show = async (req, res) => {
   }
 };
 
+const showByUser = async (req, res) => {
+  response_error = {};
+  const { error } = validateUUIDUser(req.params);
+  if (error)
+    error.details.forEach((err_msg) => {
+      response_error[err_msg.path[0]] = err_msg.message;
+    });
+  if (Object.keys(response_error).length === 0) {
+    try {
+      const result = await prisma.hardwares.findMany({
+        where: {
+          id_user: req.params.id_user,
+        },
+        orderBy: {
+          created_at: "desc",
+        },
+      });
+      result.length < 1
+        ? responseServer404(
+            res,
+            "There is no data hardware in the database yet"
+          )
+        : responseServer200(res, "Successfully find hardware!", result);
+    } catch (error) {
+      responseServer500(
+        res,
+        "Get specific data hardware failed!, check error",
+        error
+      );
+    }
+  } else {
+    responseServer500(
+      res,
+      "Your request cannot run due to an error, check",
+      JSON.parse(JSON.stringify(response_error).replace(/\\"/g, ""))
+    );
+  }
+};
+
 const store = async (req, res) => {
   response_error = {};
   const { error } = validateHardwareStore(req.body);
@@ -138,7 +178,7 @@ const update = async (req, res) => {
     });
 
   if (Object.keys(response_error).length === 0) {
-    const { name } = req.body;
+    const { name, is_active } = req.body;
     try {
       const result = await prisma.hardwares.update({
         where: {
@@ -146,6 +186,7 @@ const update = async (req, res) => {
         },
         data: {
           name,
+          is_active: Boolean(is_active),
         },
       });
       responseServer200(res, "Successfully update hardware!", {
@@ -191,4 +232,4 @@ const destroy = async (req, res) => {
   }
 };
 
-export default { index, show, store, update, destroy };
+export default { index, show, showByUser, store, update, destroy };
