@@ -46,6 +46,7 @@ route.get(`${basicURI}/refresh-token`, checkVerifRefresh, user.refreshToken);
  */
 route.get(`${basicURI}/hardware/`, hardware.index);
 route.get(`${basicURI}/hardware/:id_hardware`, hardware.show);
+route.get(`${basicURI}/hardware/id-user/:id_user`, hardware.showByUser); // tmp remove validation jwt
 route.post(`${basicURI}/hardware/save`, hardware.store);
 route.put(`${basicURI}/hardware/:id_hardware/update`, hardware.update);
 
@@ -71,8 +72,9 @@ route.delete(`${basicURI}/card/:id_card`, card.destroy);
  */
 route.get(`${basicURI}/outlet/`, outlet.index);
 route.get(`${basicURI}/outlet/:id_outlet`, outlet.show);
-route.post(`${basicURI}/outlet/save`, outlet.store);
-route.put(`${basicURI}/outlet/:id_outlet/update`, outlet.update);
+route.get(`${basicURI}/outlet/id-user/:id_user`, outlet.showByUser); // tmp remove validation jwt
+route.post(`${basicURI}/outlet/save`, outlet.store); // tmp remove validation jwt
+route.put(`${basicURI}/outlet/:id_outlet/update`, outlet.update); // tmp remove validation jwt
 
 /**
  * English: endpoint url for transaction
@@ -89,7 +91,7 @@ route.get(
   checkVerifAccess,
   transaction.showByUser
 );
-route.post(`${basicURI}/transaction/save`, checkVerifAccess, transaction.store);
+route.post(`${basicURI}/transaction/save`,  transaction.store); // tmp remove validation jwt
 route.put(
   `${basicURI}/transaction/cancel/:id_transaction`,
   checkVerifAccess,
