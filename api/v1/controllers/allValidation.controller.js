@@ -58,7 +58,7 @@ const validateHardwareStore = (requestData) => {
   const hardwareStoreSchema = joi
     .object({
       id_user: joi.string().required().uuid(),
-      sn_sensor: joi.string().required().max(10),
+      sn_sensor: joi.string().required().max(12),
       name: joi.string().required().max(100),
       is_active: joi.boolean().required(),
     })
@@ -95,6 +95,7 @@ const validateCardStore = (requestData) => {
     .options({ abortEarly: false });
   return cardStoreSchema.validate(requestData);
 };
+
 const validateCardRfid = (requestData) => {
   const cardRfidSchema = joi
     .object({
