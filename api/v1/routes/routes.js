@@ -49,6 +49,7 @@ route.get(`${basicURI}/hardware/:id_hardware`, hardware.show);
 route.get(`${basicURI}/hardware/id-user/:id_user`, hardware.showByUser); // tmp remove validation jwt
 route.post(`${basicURI}/hardware/save`, hardware.store);
 route.put(`${basicURI}/hardware/:id_hardware/update`, hardware.update);
+route.delete(`${basicURI}/hardware/:id_hardware`, hardware.destroy);
 
 /**
  * English: endpoint url for card
@@ -91,7 +92,7 @@ route.get(
   checkVerifAccess,
   transaction.showByUser
 );
-route.post(`${basicURI}/transaction/save`,  transaction.store); // tmp remove validation jwt
+route.post(`${basicURI}/transaction/save`, transaction.store); // tmp remove validation jwt
 route.put(
   `${basicURI}/transaction/cancel/:id_transaction`,
   checkVerifAccess,
