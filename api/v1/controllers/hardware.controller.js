@@ -109,6 +109,9 @@ const showByUser = async (req, res) => {
         orderBy: {
           created_at: "desc",
         },
+        include: {
+          transactions: true
+        }
       });
       result.length < 1
         ? responseServer404(
@@ -186,7 +189,7 @@ const update = async (req, res) => {
         },
         data: {
           name,
-          is_active: Boolean(is_active),
+          is_active: is_active == "true" ? true : false,
         },
       });
       responseServer200(res, "Successfully update hardware!", {
