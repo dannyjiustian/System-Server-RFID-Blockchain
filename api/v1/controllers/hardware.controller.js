@@ -149,7 +149,7 @@ const store = async (req, res) => {
         data: {
           name,
           sn_sensor,
-          is_active,
+          is_active: is_active == "true" ? true : false,
           id_user,
         },
       });
