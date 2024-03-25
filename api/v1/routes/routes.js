@@ -73,9 +73,17 @@ route.delete(`${basicURI}/card/:id_card`, card.destroy);
  */
 route.get(`${basicURI}/outlet/`, outlet.index);
 route.get(`${basicURI}/outlet/:id_outlet`, outlet.show);
-route.get(`${basicURI}/outlet/id-user/:id_user`, outlet.showByUser); // tmp remove validation jwt
-route.post(`${basicURI}/outlet/save`, outlet.store); // tmp remove validation jwt
-route.put(`${basicURI}/outlet/:id_outlet/update`, outlet.update); // tmp remove validation jwt
+route.get(
+  `${basicURI}/outlet/id-user/:id_user`,
+  checkVerifAccess,
+  outlet.showByUser
+); // tmp remove validation jwt
+route.post(`${basicURI}/outlet/save`, checkVerifAccess, outlet.store); // tmp remove validation jwt
+route.put(
+  `${basicURI}/outlet/:id_outlet/update`,
+  checkVerifAccess,
+  outlet.update
+); // tmp remove validation jwt
 
 /**
  * English: endpoint url for transaction
