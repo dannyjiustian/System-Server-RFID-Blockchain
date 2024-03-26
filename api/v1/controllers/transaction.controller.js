@@ -26,91 +26,128 @@ clientMqtt.on("message", async (topic, message) => {
   const JSONdata = JSON.parse(message.toString());
   if (topic == "ReadRFID") {
     try {
-      const result = await prisma.transactions.findFirstOrThrow({
+      const resultTransaction = await prisma.transactions.findFirstOrThrow({
         where: {
           type: JSONdata.type,
-          hardwares: {
-            sn_sensor: JSONdata.sn_sensor,
-          },
-          cards: {
-            id_rfid: JSONdata.rfid,
-          },
           txn_hash: null,
-        },
-        include: {
-          cards: true,
-          outlets: true,
+          status: "On Proses",
         },
       });
 
+      const resultHardware = await prisma.hardwares.findFirst({
+        where: {
+          id_user: resultTransaction.id_user,
+          sn_sensor: JSONdata.sn_sensor,
+          is_active: true,
+        },
+      });
+
+      if (resultHardware == null) {
+        clientMqtt.publish(
+          resultTransaction.id_transaction,
+          JSON.stringify({
+            status: false,
+            message: "Hardware Not Found",
+            code: 404,
+          })
+        );
+        return;
+      }
+
+      const resultCard = await prisma.cards.findFirst({
+        where: {
+          id_rfid: JSONdata.rfid,
+        },
+      });
+
+      if (resultCard == null) {
+        clientMqtt.publish(
+          resultTransaction.id_transaction,
+          JSON.stringify({
+            status: false,
+            message: "Card Not Found",
+            code: 404,
+          })
+        );
+        return;
+      }
+
       if (JSONdata.type === 0) {
         // before this will later check the etherium blockchain transaction
-        const balance_update = result.cards.balance - result.total_payment;
-        if (balance_update < 0) {
+        const balance_update =
+          resultCard.balance - resultTransaction.total_payment;
+        if (balance_update < 1) {
           clientMqtt.publish(
-            result.id_transaction,
+            resultTransaction.id_transaction,
             JSON.stringify({
-              success: false,
+              status: false,
               message: "Balance Card Not Enough",
-              code: 400,
+              code: 403,
             })
           );
         } else {
-          await prisma.transactions.update({
-            where: {
-              id_transaction: result.id_transaction,
-            },
-            data: {
-              txn_hash: "helo",
-            },
-          });
-          await prisma.cards.update({
-            where: {
-              id_rfid: result.cards.id_rfid,
-            },
-            data: {
-              balance: balance_update,
-            },
-          });
-          await prisma.outlets.update({
-            where: {
-              id_outlet: result.outlets.id_outlet,
-            },
-            data: {
-              balance: {
-                increment: result.total_payment,
+          await prisma.$transaction([
+            prisma.transactions.update({
+              where: {
+                id_transaction: resultTransaction.id_transaction,
               },
-            },
-          });
+              data: {
+                id_hardware: resultHardware.id_hardware,
+                id_card: resultCard.id_card,
+                id_user: resultCard.id_user,
+                status: "Selesai",
+                txn_hash: "helo",
+              },
+            }),
+            prisma.cards.update({
+              where: {
+                id_card: resultCard.id_card,
+              },
+              data: {
+                balance: balance_update,
+              },
+            }),
+            prisma.outlets.update({
+              where: {
+                id_outlet: resultTransaction.id_outlet,
+              },
+              data: {
+                balance: {
+                  increment: resultTransaction.total_payment,
+                },
+              },
+            }),
+          ]);
           clientMqtt.publish(
-            result.id_transaction,
+            resultTransaction.id_transaction,
             JSON.stringify({
-              success: true,
+              status: true,
               message: "Transaction Successfully",
               code: 200,
             })
           );
         }
-      } else if (JSONdata.type === 1) {
-        await prisma.cards.update({
-          where: {
-            id_rfid: result.cards.id_rfid,
-          },
-          data: {
-            balance: {
-              increment: result.total_payment,
-            },
-          },
-        });
-        clientMqtt.publish(
-          result.id_transaction,
-          JSON.stringify({
-            success: true,
-            message: "Transaction Successfully",
-            code: 200,
-          })
-        );
       }
+      //else if (JSONdata.type === 1) {
+      //   await prisma.cards.update({
+      //     where: {
+      //       id_rfid: result.cards.id_rfid,
+      //     },
+      //     data: {
+      //       balance: {
+      //         increment: result.total_payment,
+      //       },
+      //     },
+      //   });
+      //   clientMqtt.publish(
+      //     result.id_transaction,
+      //     JSON.stringify({
+      //       success: true,
+      //       message: "Transaction Successfully",
+      //       code: 200,
+      //     })
+      //   );
+      // }
     } catch (error) {
       console.log(`Update transaction failed!, check error: ${error}`);
     }
@@ -193,13 +230,16 @@ const showByUser = async (req, res) => {
     try {
       let options = {
         where: {
-          id_user: req.params.id_user,
+          OR: [
+            {
+              id_user: req.params.id_user,
+            },
+          ],
         },
         orderBy: {
           created_at: "desc",
         },
       };
-
       if (typeof req.query.take !== "undefined" && req.query.take !== "")
         options.take = parseInt(req.query.take);
       if (typeof req.query.status !== "undefined" && req.query.status !== "") {
@@ -208,6 +248,13 @@ const showByUser = async (req, res) => {
           ? (options.where.status.not = "On Proses")
           : (options.where.status = "On Proses");
       }
+      if (
+        typeof req.query.id_outlet !== "undefined" &&
+        req.query.id_outlet !== ""
+      )
+        options.where.OR.push({
+          id_outlet: req.query.id_outlet,
+        });
       const result = await prisma.transactions.findMany(options);
       result.length < 1
         ? responseServer404(
