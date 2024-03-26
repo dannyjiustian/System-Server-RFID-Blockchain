@@ -119,6 +119,9 @@ const showByUser = async (req, res) => {
         where: {
           id_user: req.params.id_user,
         },
+        orderBy: {
+          balance: "desc",
+        },
       };
       if (typeof req.query.id_rfid !== "undefined" && req.query.id_rfid !== "")
         options.where.id_rfid = req.query.id_rfid;
