@@ -83,7 +83,7 @@ const register = async (req, res) => {
     const { name, username, email, password, role } = req.body;
     const passwordHash = hash(password);
     try {
-      const result = await prisma.users.create({
+      let options = {
         data: {
           name,
           username,
@@ -91,7 +91,16 @@ const register = async (req, res) => {
           password: passwordHash,
           role,
         },
-      });
+      };
+      if (role !== "1") {
+        options.data.outlets = {
+          create: {
+            smart_contract: "0xsdasdasdasdasdasdasda",
+            balance: 0,
+          },
+        };
+      }
+      const result = await prisma.users.create(options);
       responseServer200(res, "Successfully register!", {
         name: result.name,
       });
