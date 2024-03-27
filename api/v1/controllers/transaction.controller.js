@@ -127,27 +127,40 @@ clientMqtt.on("message", async (topic, message) => {
             })
           );
         }
+      } else if (JSONdata.type === 1) {
+        await prisma.$transaction([
+          prisma.transactions.update({
+            where: {
+              id_transaction: resultTransaction.id_transaction,
+            },
+            data: {
+              id_hardware: resultHardware.id_hardware,
+              id_card: resultCard.id_card,
+              id_user: resultCard.id_user,
+              status: "Selesai",
+              txn_hash: "helo",
+            },
+          }),
+          prisma.cards.update({
+            where: {
+              id_card: resultCard.id_card,
+            },
+            data: {
+              balance: {
+                increment: resultTransaction.total_payment,
+              },
+            },
+          }),
+        ]);
+        clientMqtt.publish(
+          resultTransaction.id_transaction,
+          JSON.stringify({
+            status: true,
+            message: "Transaction Successfully",
+            code: 200,
+          })
+        );
       }
-      //else if (JSONdata.type === 1) {
-      //   await prisma.cards.update({
-      //     where: {
-      //       id_rfid: result.cards.id_rfid,
-      //     },
-      //     data: {
-      //       balance: {
-      //         increment: result.total_payment,
-      //       },
-      //     },
-      //   });
-      //   clientMqtt.publish(
-      //     result.id_transaction,
-      //     JSON.stringify({
-      //       success: true,
-      //       message: "Transaction Successfully",
-      //       code: 200,
-      //     })
-      //   );
-      // }
     } catch (error) {
       console.log(`Update transaction failed!, check error: ${error}`);
     }
